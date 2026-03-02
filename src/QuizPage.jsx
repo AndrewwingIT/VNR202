@@ -777,7 +777,7 @@ function WordGuessScreen({ onRestart, autoFill }) {
             margin: "0 0 8px",
           }}>Xuất Sắc!</p>
           <p style={{ color: "rgba(255,200,140,0.8)", fontSize: "15px", fontFamily: "Georgia, serif", marginBottom: "24px" }}>
-            🇻🇳 Chiến thắng Điện Biên Phủ — Lừng lẫy năm châu, chấn động địa cầu!
+            Chiến thắng Điện Biên Phủ — Lừng lẫy năm châu, chấn động địa cầu!
           </p>
           <button
             onClick={onRestart}
@@ -791,7 +791,7 @@ function WordGuessScreen({ onRestart, autoFill }) {
         </div>
       ) : null}
 
-      {/* Hint */}
+      {/* Hint
       {!submitted && (
         <p style={{
           marginTop: "20px", color: "rgba(255,150,80,0.4)", fontSize: "12px",
@@ -799,7 +799,7 @@ function WordGuessScreen({ onRestart, autoFill }) {
         }}>
           Gợi ý: Một sự kiện lịch sử năm 1954 ✦
         </p>
-      )}
+      )} */}
     </div>
   );
 }

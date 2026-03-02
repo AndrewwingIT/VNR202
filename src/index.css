@@ -8,8 +8,19 @@ body {
   margin: 0;
   min-height: 100vh;
   background: #0a0400;
+  font-family: 'Lora', 'Palatino Linotype', Palatino, serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Override all inline Georgia references globally */
+* {
+  font-family: 'Lora', 'Palatino Linotype', Palatino, serif !important;
+}
+
+/* Restore monospace where explicitly needed */
+kbd, code, pre {
+  font-family: 'Courier New', Courier, monospace !important;
 }
 
 #root {

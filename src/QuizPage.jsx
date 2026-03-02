@@ -805,18 +805,22 @@ function WordGuessScreen({ onRestart, autoFill }) {
 }
 
 // ─── PUZZLE SCREEN ────────────────────────────────────────────────────────────
-function PuzzleScreen({ onComplete }) {
+function PuzzleScreen({ onComplete, autoSolve = false }) {
   const CELL_W = 126; // ~3:2 ratio matching actual images (853/3≈284, 569/3≈190)
   const CELL_H = 84;
   const SIZE_W = CELL_W * GRID; // 378
   const SIZE_H = CELL_H * GRID; // 252
 
   // positions[i] = index of piece currently in slot i (or null)
-  const [slots, setSlots] = useState(Array(TOTAL).fill(null));
+  const [slots, setSlots] = useState(() =>
+    autoSolve ? Array.from({ length: TOTAL }, (_, i) => i) : Array(TOTAL).fill(null)
+  );
   // unplaced pieces shuffled
-  const [tray, setTray] = useState(() => shuffle(Array.from({ length: TOTAL }, (_, i) => i)));
+  const [tray, setTray] = useState(() =>
+    autoSolve ? [] : shuffle(Array.from({ length: TOTAL }, (_, i) => i))
+  );
   const [dragging, setDragging] = useState(null); // { piece, from: 'tray'|'slot', idx }
-  const [won, setWon] = useState(false);
+  const [won, setWon] = useState(autoSolve);
   const [in_, setIn] = useState(false);
 
   useEffect(() => { setTimeout(() => setIn(true), 80); }, []);
@@ -995,14 +999,7 @@ function PuzzleScreen({ onComplete }) {
                   draggable={false}
                   style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", pointerEvents: "none" }}
                 />
-                {/* correct indicator */}
-                {piece === slotIdx && (
-                  <div style={{
-                    position: "absolute", inset: 0,
-                    border: "2px solid rgba(0,255,100,0.5)",
-                    pointerEvents: "none", borderRadius: "1px",
-                  }} />
-                )}
+
               </div>
             )}
           </div>
@@ -1057,35 +1054,37 @@ function PuzzleScreen({ onComplete }) {
 }
 
 // ─── MAIN EXPORT ──────────────────────────────────────────────────────────────
-export default function QuizPage({ onNavigate }) {
-  const [screen, setScreen] = useState("welcome"); // welcome | quiz | puzzle | wordguess
+export default function QuizPage({ onNavigate, easterKey = 0, wordguessKey = 0 }) {
+  const [screen, setScreen] = useState("welcome");
   const [qIdx, setQIdx] = useState(0);
   const [collected, setCollected] = useState(0);
   const [quizKey, setQuizKey] = useState(0);
   const [autoFill, setAutoFill] = useState(false);
+  const [puzzleAutoSolve, setPuzzleAutoSolve] = useState(false);
+  const [shuffledOrder, setShuffledOrder] = useState(() => shuffle(Array.from({ length: QUESTIONS.length }, (_, i) => i)));
 
-  // ── Hidden cheat: Ctrl + A + E → skip to wordguess with all answers filled ──
-  useEffect(() => {
-    const pressed = new Set();
-    const onDown = (e) => {
-      pressed.add(e.key.toLowerCase());
-      if (e.ctrlKey && pressed.has("a") && pressed.has("e")) {
-        e.preventDefault();
-        setAutoFill(true);
-        setQIdx(0);
-        setCollected(0);
-        setQuizKey((k) => k + 1);
-        setScreen("wordguess");
-      }
-    };
-    const onUp = (e) => { pressed.delete(e.key.toLowerCase()); };
-    window.addEventListener("keydown", onDown);
-    window.addEventListener("keyup", onUp);
-    return () => {
-      window.removeEventListener("keydown", onDown);
-      window.removeEventListener("keyup", onUp);
-    };
+  const reshuffle = useCallback(() => {
+    setShuffledOrder(shuffle(Array.from({ length: QUESTIONS.length }, (_, i) => i)));
   }, []);
+
+  // ── Ctrl+Q (from App.jsx) → jump straight to puzzle screen, already assembled ──
+  useEffect(() => {
+    if (easterKey > 0) {
+      setPuzzleAutoSolve(true);
+      setScreen("puzzle");
+    }
+  }, [easterKey]);
+
+  // ── wordguessKey from App.jsx (Ctrl+A+E) → jump to word-guess, all filled ──
+  useEffect(() => {
+    if (wordguessKey > 0) {
+      setAutoFill(true);
+      setQIdx(0);
+      setCollected(0);
+      setQuizKey((k) => k + 1);
+      setScreen("wordguess");
+    }
+  }, [wordguessKey]);
 
   const handleCorrect = useCallback(() => {
     const next = collected + 1;
@@ -1098,21 +1097,26 @@ export default function QuizPage({ onNavigate }) {
   }, [collected]);
 
   const handleWrong = useCallback(() => {
+    reshuffle();
     setQIdx(0);
     setCollected(0);
     setQuizKey((k) => k + 1);
     setScreen("quiz");
-  }, []);
+  }, [reshuffle]);
 
   const handleRestart = useCallback(() => {
+    reshuffle();
     setQIdx(0);
     setCollected(0);
     setQuizKey((k) => k + 1);
     setAutoFill(false);
+    setPuzzleAutoSolve(false);
     setScreen("welcome");
-  }, []);
+  }, [reshuffle]);
 
-  const startQuiz = () => { setQIdx(0); setCollected(0); setQuizKey((k) => k + 1); setScreen("quiz"); };
+
+
+  const startQuiz = () => { reshuffle(); setQIdx(0); setCollected(0); setQuizKey((k) => k + 1); setPuzzleAutoSolve(false); setScreen("quiz"); };
 
   return (
     <div style={{
@@ -1163,7 +1167,7 @@ export default function QuizPage({ onNavigate }) {
         {screen === "quiz" && (
           <QuestionScreen
             key={`${quizKey}-${qIdx}`}
-            question={QUESTIONS[qIdx]}
+            question={QUESTIONS[shuffledOrder[qIdx]]}
             index={qIdx}
             total={TOTAL}
             collectedPieces={collected}
@@ -1171,7 +1175,7 @@ export default function QuizPage({ onNavigate }) {
             onWrong={handleWrong}
           />
         )}
-        {screen === "puzzle" && <PuzzleScreen onComplete={() => setScreen("wordguess")} />}
+        {screen === "puzzle" && <PuzzleScreen onComplete={() => setScreen("wordguess")} autoSolve={puzzleAutoSolve} />}
         {screen === "wordguess" && <WordGuessScreen onRestart={handleRestart} autoFill={autoFill} />}
       </div>
 

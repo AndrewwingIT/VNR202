@@ -1,35 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import HomePage from './HomePage';
+import QuizPage from './QuizPage';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [page, setPage] = useState('home');
 
+  if (page === 'home') {
+    return <HomePage onNavigate={setPage} />;
+  }
+
+  if (page === 'quiz') {
+    return <QuizPage onNavigate={setPage} />;
+  }
+
+  // Placeholder for future pages
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+    <div style={{
+      minHeight: '100vh',
+      background: '#0a0400',
+      color: '#fff',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: "'Georgia', 'Times New Roman', serif",
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <p style={{ color: '#ffaa66', marginBottom: '20px', fontSize: '18px' }}>
+          Trang "{page}" đang được phát triển
         </p>
+        <button
+          onClick={() => setPage('home')}
+          style={{
+            padding: '10px 28px',
+            background: 'rgba(180,40,0,0.4)',
+            color: '#ffcc88',
+            border: '1px solid #cc4400',
+            borderRadius: '2px',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            fontSize: '14px',
+            letterSpacing: '0.1em',
+          }}
+        >
+          ← Quay lại
+        </button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;

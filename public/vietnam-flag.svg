@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Red circle -->
+  <circle cx="50" cy="50" r="50" fill="#DA251D"/>
+  <!-- Yellow 5-pointed star centered -->
+  <polygon
+    points="50,14 61,44 93,44 68,63 77,93 50,74 23,93 32,63 7,44 39,44"
+    fill="#FFFF00"
+  />
+</svg>

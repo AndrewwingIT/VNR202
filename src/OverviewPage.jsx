@@ -752,7 +752,7 @@ export default function OverviewPage({ onNavigate }) {
               transition: 'opacity 0.8s ease 0.6s',
             }}>
               <button
-                onClick={() => onNavigate('quiz')}
+                onClick={() => onNavigate('home')}
                 style={{
                   padding: '16px 40px',
                   background: 'linear-gradient(135deg, rgba(180,40,0,0.4), rgba(120,20,0,0.3))',
@@ -779,7 +779,7 @@ export default function OverviewPage({ onNavigate }) {
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                ⚔️ Kiểm Tra Kiến Thức
+                🏠 Về Trang Chủ
               </button>
               <button
                 onClick={() => scrollTo('crisis')}

@@ -120,10 +120,10 @@ export default function AIUsageModal({ isOpen, onClose }) {
               <strong style={{ color: '#ff9955' }}>• Google Gemini AI:</strong> Xử lý ngôn ngữ tự nhiên và trả lời câu hỏi chuyên sâu
             </div>
             <div style={{ marginBottom: '16px' }}>
-              <strong style={{ color: '#ff9955' }}>• Claude AI:</strong> Thiết kế và phát triển website, tối ưu UX/UI
+              <strong style={{ color: '#ff9955' }}>• ChatGPT:</strong> Thiết kế và phát triển website, tối ưu UX/UI
             </div>
             <div>
-              <strong style={{ color: '#ff9955' }}>• ChatGPT:</strong> Nghiên cứu và tổng hợp nội dung học thuật
+              <strong style={{ color: '#ff9955' }}>• NotebookLM:</strong> Nghiên cứu và tổng hợp nội dung học thuật
             </div>
           </div>
 

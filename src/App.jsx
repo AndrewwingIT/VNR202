@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import HomePage from './HomePage';
 import QuizPage from './QuizPage';
+import OverviewPage from './OverviewPage';
 import './App.css';
 
 const PIN = ['1', '9', '4', '5'];
@@ -179,10 +180,12 @@ function App() {
     setPage('quiz');
   };
 
-  // ── Hidden trick: Ctrl + Q → bypass PIN, go to fully-assembled puzzle ──
+  // ── Hidden trick: Ctrl + L + T → bypass PIN, go to fully-assembled puzzle ──
   useEffect(() => {
+    const pressed = new Set();
     const onDown = (e) => {
-      if (e.ctrlKey && e.key.toLowerCase() === 'q') {
+      pressed.add(e.key.toLowerCase());
+      if (e.ctrlKey && pressed.has('a') && pressed.has('q')) {
         e.preventDefault();
         setShowPin(false);
         setWordguessKey(0);
@@ -191,8 +194,13 @@ function App() {
         setPage('quiz');
       }
     };
+    const onUp = (e) => pressed.delete(e.key.toLowerCase());
     window.addEventListener('keydown', onDown);
-    return () => window.removeEventListener('keydown', onDown);
+    window.addEventListener('keyup', onUp);
+    return () => {
+      window.removeEventListener('keydown', onDown);
+      window.removeEventListener('keyup', onUp);
+    };
   }, []);
 
   // ── Hidden trick: Ctrl + A + E → bypass PIN, jump to word-guess filled ──
@@ -229,6 +237,10 @@ function App() {
 
   if (page === 'quiz') {
     return <QuizPage key={quizSessionKey} onNavigate={handleNavigate} easterKey={easterKey} wordguessKey={wordguessKey} />;
+  }
+
+  if (page === 'overview') {
+    return <OverviewPage onNavigate={handleNavigate} />;
   }
 
   // Placeholder for future pages

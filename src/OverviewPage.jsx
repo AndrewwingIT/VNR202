@@ -1,6 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import ParticlesBackground from './components/ParticlesBackground';
 
+// ── Image imports (Vite resolves src/assets correctly) ─────────────────────
+import imgNanDoi from './assets/images/nan-doi.jpg';
+import imgBinhDanHocVu from './assets/images/binh-dan-hoc-vu.gif';
+import imgMotNamKhiDoi from './assets/images/mot-nam-khi-doi.jpg';
+import imgTuyenNgon from './assets/images/tuyen-ngon.jpg';
+import imgTongTuyenCu from './assets/images/tong-tuyen-cu.jpg';
+import imgLoiKeuGoi from './assets/images/loi-keu-goi.jpg';
+import imgQuanDoi from './assets/images/quan-doi.jpg';
+import imgDaiHoiDang from './assets/images/dai-hoi-dang.jpg';
+import imgCaiCachRuongDat from './assets/images/cai-cach-ruong-dat.jpg';
+import imgDienBienPhu from './assets/images/dien-bien-phu.jpg';
+
 // ── Data ─────────────────────────────────────────────────────────────────────
 
 const CHALLENGES = [
@@ -36,6 +48,10 @@ const PHASES = [
         desc: 'Nhân nhượng Tưởng ở miền Bắc để tập trung chống Pháp ở miền Nam. Ký Hiệp định sơ bộ (6/3/1946) và Tạm ước (14/9/1946) — đuổi Tưởng, tranh thủ thời gian củng cố lực lượng.',
       },
     ],
+    photos: [
+      { src: imgTuyenNgon, caption: 'Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập tại Quảng trường Ba Đình, 2/9/1945' },
+      { src: imgTongTuyenCu, caption: 'Bác Hồ bỏ phiếu Tổng tuyển cử — ngày 6/1/1946, lần đầu tiên toàn dân đi bỏ phiếu' },
+    ],
   },
   {
     id: 2,
@@ -61,6 +77,10 @@ const PHASES = [
         title: 'Chiến dịch Biên giới Thu Đông 1950 — Bước ngoặt',
         desc: 'Chiến dịch quân sự lớn đầu tiên ta chủ động tiến công. Xoay chuyển tình thế, giành thế chủ động chiến trường — bước ngoặt từ phòng ngự sang tấn công.',
       },
+    ],
+    photos: [
+      { src: imgLoiKeuGoi, caption: 'Bản thảo Lời kêu gọi Toàn quốc kháng chiến viết tay của Chủ tịch Hồ Chí Minh, 19/12/1946' },
+      { src: imgQuanDoi, caption: 'Các chiến sĩ lên đường kháng chiến — mỗi người dân là một chiến sĩ' },
     ],
   },
   {
@@ -88,7 +108,18 @@ const PHASES = [
         desc: 'Pháp dựa Mỹ đẻ ra Kế hoạch Navarre. Đảng mở Tiến công Đông Xuân 1953–1954, buộc địch phân tán lực lượng. Đỉnh cao: Chiến thắng Điện Biên Phủ — đánh bại hoàn toàn ý chí xâm lược của Pháp → Hiệp định Geneve ký kết.',
       },
     ],
+    photos: [
+      { src: imgDaiHoiDang, caption: 'Đại hội Đảng Lao động Việt Nam lần II, Chiến khu Việt Bắc, tháng 2/1951' },
+      { src: imgCaiCachRuongDat, caption: 'Bác Hồ thăm hỏi nông dân trong chiến dịch cải cách ruộng đất' },
+      { src: imgDienBienPhu, caption: 'Bộ đội ta trong chiến hào Điện Biên Phủ — "56 ngày đêm khoét núi ngủ hầm"' },
+    ],
   },
+];
+
+const CRISIS_PHOTOS = [
+  { src: imgNanDoi, caption: 'Nạn đói Ất Dậu 1945 — gần 2 triệu đồng bào miền Bắc thiệt mạng (Ảnh: Võ An Ninh)' },
+  { src: imgBinhDanHocVu, caption: 'Lớp Bình dân học vụ dưới ánh đèn dầu — 95% dân số mù chữ cần được xóa bỏ' },
+  { src: imgMotNamKhiDoi, caption: '"Một nắm khi đói bằng một gói khi no" — tinh thần đoàn kết vượt qua nạn đói' },
 ];
 
 const FACTORS = [
@@ -286,6 +317,11 @@ function PhaseCard({ phase, idx }) {
           </div>
         ))}
       </div>
+
+      {/* Photo strip */}
+      {phase.photos && phase.photos.length > 0 && (
+        <PhotoStrip photos={phase.photos} marginLeft={84} accentColor={phase.color} />
+      )}
     </div>
   );
 }
@@ -357,6 +393,110 @@ const ENEMIES = [
   { icon: '💸', title: 'Giặc Đói', color: '#ff8800', desc: 'Kinh tế kiệt quệ, kho bạc trống rỗng, lạm phát tăng cao. 50% ruộng đất bỏ hoang. Hậu quả 2 triệu người chết đói.' },
   { icon: '📚', title: 'Giặc Dốt', color: '#ffcc00', desc: '95% dân số mù chữ. Hủ tục lạc hậu còn nặng nề. Chính quyền mới, non trẻ, thiếu thốn mọi mặt.' },
 ];
+
+// ── Historical Image ─────────────────────────────────────────────────────────
+
+function HistoricalImage({ src, caption, wide }) {
+  const [ref, visible] = useVisible(0.08);
+  const [hovered, setHovered] = useState(false);
+  return (
+    <figure ref={ref} style={{
+      margin: 0,
+      flex: wide ? '1 1 340px' : '1 1 200px',
+      maxWidth: wide ? '400px' : '280px',
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateY(0)' : 'translateY(24px)',
+      transition: 'all 0.8s ease',
+    }}>
+      <div style={{
+        overflow: 'hidden',
+        borderRadius: '3px',
+        border: '1px solid rgba(255,150,80,0.2)',
+        background: '#0d0200',
+        position: 'relative',
+        boxShadow: hovered ? '0 8px 32px rgba(255,100,0,0.2)' : '0 4px 16px rgba(0,0,0,0.5)',
+        transition: 'box-shadow 0.4s ease',
+      }}>
+        <img
+          src={src}
+          alt={caption}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            width: '100%',
+            height: wide ? '220px' : '170px',
+            objectFit: 'cover',
+            display: 'block',
+            filter: hovered
+              ? 'sepia(15%) brightness(0.9) contrast(1.05)'
+              : 'sepia(40%) brightness(0.72) contrast(1.2)',
+            transform: hovered ? 'scale(1.06)' : 'scale(1)',
+            transition: 'all 0.55s ease',
+            cursor: 'zoom-in',
+          }}
+        />
+        {/* Vignette overlay */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.45) 100%)',
+          pointerEvents: 'none',
+        }} />
+        {/* Film grain effect */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          boxShadow: 'inset 0 0 0 1px rgba(255,150,80,0.12)',
+          pointerEvents: 'none',
+        }} />
+      </div>
+      {caption && (
+        <figcaption style={{
+          color: 'rgba(255,165,80,0.48)',
+          fontSize: '10px',
+          fontStyle: 'italic',
+          textAlign: 'center',
+          marginTop: '8px',
+          lineHeight: 1.5,
+          letterSpacing: '0.03em',
+          padding: '0 4px',
+          fontFamily: 'Georgia, serif',
+        }}>{caption}</figcaption>
+      )}
+    </figure>
+  );
+}
+
+function PhotoStrip({ photos, marginLeft, accentColor }) {
+  return (
+    <div style={{
+      marginLeft: marginLeft || 0,
+      marginTop: '36px',
+      display: 'flex',
+      gap: '14px',
+      flexWrap: 'wrap',
+      padding: '24px',
+      background: 'rgba(0,0,0,0.25)',
+      border: `1px solid ${accentColor || 'rgba(255,136,0,0.15)'}22`,
+      borderLeft: `3px solid ${accentColor || 'rgba(255,136,0,0.3)'}`,
+      borderRadius: '0 8px 8px 0',
+      position: 'relative',
+    }}>
+      <div style={{
+        position: 'absolute',
+        top: '-1px', left: '24px',
+        fontSize: '9px',
+        letterSpacing: '0.3em',
+        color: accentColor || 'rgba(255,136,0,0.5)',
+        textTransform: 'uppercase',
+        background: 'linear-gradient(160deg, #0a0400, #1a0800)',
+        padding: '0 8px',
+        fontFamily: 'Georgia, serif',
+      }}>Tư liệu lịch sử</div>
+      {photos.map((photo, i) => (
+        <HistoricalImage key={i} {...photo} />
+      ))}
+    </div>
+  );
+}
 
 function SectionTitle({ children, sub }) {
   const [ref, visible] = useVisible();
@@ -644,6 +784,11 @@ export default function OverviewPage({ onNavigate }) {
           {/* Three enemies */}
           <div style={{ maxWidth: '900px', margin: '60px auto 0', display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
             {ENEMIES.map((e, i) => <EnemyCard key={i} {...e} delay={i} />)}
+          </div>
+
+          {/* Historic photo strip */}
+          <div style={{ maxWidth: '900px', margin: '48px auto 0' }}>
+            <PhotoStrip photos={CRISIS_PHOTOS} accentColor='#cc3300' />
           </div>
         </section>
 
